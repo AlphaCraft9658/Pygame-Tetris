@@ -57,17 +57,35 @@ def generate_bag():
 
 test_tetromino = Tetromino(0)
 test_tetromino.pos = [3, 3]
+min_x = 10
+max_x = 0
 run = True
 while run:
+    min_x = 10
+    max_x = 0
     for event in pygame.event.get():
         if event.type == QUIT:
             run = False
         if event.type == KEYDOWN:
             if event.key == K_LEFT:
-                if test_tetromino.pos[0] > 0:
-                    test_tetromino.pos[0] -= 1
+                test_tetromino.pos[0] -= 1
+                for y_i, y in enumerate(test_tetromino.shape[test_tetromino.state]):
+                    for x_i, x in enumerate(y):
+                        if x_i < min_x and x == "0":
+                            min_x = x_i
+                            if test_tetromino.pos[0] + x_i < 0:
+                                test_tetromino.pos[0] += 1
+                # if test_tetromino.pos[0] > 0:
+                #     test_tetromino.pos[0] -= 1
             if event.key == K_RIGHT:
                 test_tetromino.pos[0] += 1
+                for y_i, y in enumerate(test_tetromino.shape[test_tetromino.state]):
+                    for x_i, x in enumerate(y):
+                        if x_i > max_x and x == "0":
+                            max_x = x_i
+                            if test_tetromino.pos[0] + x_i > 9:
+                                test_tetromino.pos[0] -= 1
+                # test_tetromino.pos[0] += 1
             if event.key == K_e:
                 test_tetromino.rotate_right(grid)
             if event.key == K_q:

@@ -43,15 +43,7 @@ l_shape = [["..0",
             ".0",
             ".0"]]
 
-o_shape = [[".00",
-            ".00"],
-           ["...",
-            ".00",
-            ".00"],
-           ["..",
-            "00",
-            "00"],
-           ["00",
+o_shape = [["00",
             "00"]]
 
 s_shape = [[".00",
@@ -102,11 +94,6 @@ i_offset_data = (((0, 0), (-1, 0), (2, 0), (-1, 0), (2, 0)),
                  ((-1, -1), (1, -1), (-2, -1), (1, 0), (-2, 0)),
                  ((0, -1), (0, -1), (0, -1), (0, 1), (0, -2)))
 
-o_offset_data = (((0, 0)),
-                 ((0, 1)),
-                 ((-1, 1)),
-                 ((-1, 0)))
-
 
 class Tetromino:
     def __init__(self, shape):
@@ -134,10 +121,6 @@ class Tetromino:
             self.state = 0
         if self.shape_index == 0:
             self.pos -= pygame.Vector2(i_offset_data[self.state][0]) - pygame.Vector2(i_offset_data[self.state - 1][0])
-        elif self.shape_index == 3:
-            print(self.state)
-            print(pygame.Vector2(o_offset_data[self.state][0]) - pygame.Vector2(o_offset_data[self.state - 1][0]))
-            self.pos -= pygame.Vector2(o_offset_data[self.state][0]) - pygame.Vector2(o_offset_data[self.state - 1][0])
         else:
             self.pos -= pygame.Vector2(main_offset_data[self.state][0]) - pygame.Vector2(main_offset_data[self.state - 1][0])
 
@@ -148,7 +131,5 @@ class Tetromino:
             self.state = len(self.shape) - 2
         if self.shape_index == 0:
             self.pos -= pygame.Vector2(i_offset_data[self.state][0]) - pygame.Vector2(i_offset_data[self.state + 1][0])
-        elif self.shape_index == 3:
-            self.pos -= pygame.Vector2(o_offset_data[self.state][0]) - pygame.Vector2(o_offset_data[self.state + 1][0])
         else:
             self.pos -= pygame.Vector2(main_offset_data[self.state][0]) - pygame.Vector2(main_offset_data[self.state + 1][0])
