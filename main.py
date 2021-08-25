@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+from time import time
 from random import sample
 from tetromino import Tetromino
 pygame.init()
@@ -59,15 +60,46 @@ test_tetromino = Tetromino(0)
 test_tetromino.pos = [3, 3]
 min_x = 10
 max_x = 0
+ma_time = 0  # time when a move activation button was pressed
+step = 0
+move = False
 run = True
+print(time())
 while run:
+    if (pygame.key.get_pressed()[K_LEFT] or pygame.key.get_pressed()[K_RIGHT]) and time() - ma_time >= 0.25:
+        move = True
+        if step < 5:
+            step += 1
+        else:
+            step = 0
+    else:
+        move = False
     min_x = 10
     max_x = 0
+    if move and step == 5 and pygame.key.get_pressed()[K_LEFT]:
+        test_tetromino.pos[0] -= 1
+        for y_i, y in enumerate(test_tetromino.shape[test_tetromino.state]):
+            for x_i, x in enumerate(y):
+                if x_i < min_x and x == "0":
+                    min_x = x_i
+                    if test_tetromino.pos[0] + x_i < 0:
+                        test_tetromino.pos[0] += 1
+        # if test_tetromino.pos[0] > 0:
+        #     test_tetromino.pos[0] -= 1
+    if move and step == 5 and pygame.key.get_pressed()[K_RIGHT]:
+        test_tetromino.pos[0] += 1
+        for y_i, y in enumerate(test_tetromino.shape[test_tetromino.state]):
+            for x_i, x in enumerate(y):
+                if x_i > max_x and x == "0":
+                    max_x = x_i
+                    if test_tetromino.pos[0] + x_i > 9:
+                        test_tetromino.pos[0] -= 1
     for event in pygame.event.get():
         if event.type == QUIT:
             run = False
         if event.type == KEYDOWN:
             if event.key == K_LEFT:
+                ma_time = time()
                 test_tetromino.pos[0] -= 1
                 for y_i, y in enumerate(test_tetromino.shape[test_tetromino.state]):
                     for x_i, x in enumerate(y):
@@ -78,6 +110,7 @@ while run:
                 # if test_tetromino.pos[0] > 0:
                 #     test_tetromino.pos[0] -= 1
             if event.key == K_RIGHT:
+                ma_time = time()
                 test_tetromino.pos[0] += 1
                 for y_i, y in enumerate(test_tetromino.shape[test_tetromino.state]):
                     for x_i, x in enumerate(y):
