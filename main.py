@@ -17,6 +17,11 @@ pygame.draw.polygon(icon, (200, 0, 255), ((0, 50), (300, 50), (300, 150), (200, 
                                           (100, 150), (0, 150)))
 pygame.display.set_icon(icon)
 
+# audio
+# pygame.mixer.music.load("aud/music/Tetris.ogg")
+# pygame.mixer.music.set_volume(0.5)
+# pygame.mixer.music.play(-1)
+
 # visual grid
 display_grid = pygame.Surface((305, 605))
 display_grid.fill((0, 0, 0))
@@ -66,9 +71,10 @@ move = False
 run = True
 print(time())
 while run:
-    if (pygame.key.get_pressed()[K_LEFT] or pygame.key.get_pressed()[K_RIGHT]) and time() - ma_time >= 0.25:
+    if (pygame.key.get_pressed()[K_LEFT] or pygame.key.get_pressed()[K_RIGHT]) and not\
+            (pygame.key.get_pressed()[K_LEFT] and pygame.key.get_pressed()[K_RIGHT]) and time() - ma_time >= 0.25:
         move = True
-        if step < 5:
+        if step < 3:
             step += 1
         else:
             step = 0
@@ -76,7 +82,7 @@ while run:
         move = False
     min_x = 10
     max_x = 0
-    if move and step == 5 and pygame.key.get_pressed()[K_LEFT]:
+    if move and step == 3 and pygame.key.get_pressed()[K_LEFT]:
         test_tetromino.pos[0] -= 1
         for y_i, y in enumerate(test_tetromino.shape[test_tetromino.state]):
             for x_i, x in enumerate(y):
@@ -86,7 +92,7 @@ while run:
                         test_tetromino.pos[0] += 1
         # if test_tetromino.pos[0] > 0:
         #     test_tetromino.pos[0] -= 1
-    if move and step == 5 and pygame.key.get_pressed()[K_RIGHT]:
+    if move and step == 3 and pygame.key.get_pressed()[K_RIGHT]:
         test_tetromino.pos[0] += 1
         for y_i, y in enumerate(test_tetromino.shape[test_tetromino.state]):
             for x_i, x in enumerate(y):
@@ -94,10 +100,13 @@ while run:
                     max_x = x_i
                     if test_tetromino.pos[0] + x_i > 9:
                         test_tetromino.pos[0] -= 1
+
     for event in pygame.event.get():
         if event.type == QUIT:
             run = False
         if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                run = False
             if event.key == K_LEFT:
                 ma_time = time()
                 test_tetromino.pos[0] -= 1
@@ -119,9 +128,9 @@ while run:
                             if test_tetromino.pos[0] + x_i > 9:
                                 test_tetromino.pos[0] -= 1
                 # test_tetromino.pos[0] += 1
-            if event.key == K_e:
+            if event.key == K_x:
                 test_tetromino.rotate_right(grid)
-            if event.key == K_q:
+            if event.key == K_y:
                 test_tetromino.rotate_left(grid)
             if event.key == K_SPACE:
                 if test_tetromino.shape_index == 6:
