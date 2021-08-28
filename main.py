@@ -58,11 +58,17 @@ def update_grid():
 
 
 def generate_bag():
-    bags.append(sample([1, 2, 3, 4, 5, 6, 7], 7))
+    global bags
+    bag = sample([1, 2, 3, 4, 5, 6, 7], 7)
+    for i in range(len(bag)):
+        bag[i] -= 1
+    bags += bag
 
 
-test_tetromino = Tetromino(0)
+generate_bag()
+test_tetromino = Tetromino(bags[0])
 test_tetromino.pos = [3, 3]
+bags.pop(0)
 min_x = 10
 max_x = 0
 ma_time = 0  # time when a move activation button was pressed
@@ -106,6 +112,8 @@ while run:
         if event.type == QUIT:
             run = False
         if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                run = False
             if event.key == K_LEFT:
                 ma_time = time()
                 test_tetromino.pos[0] -= 1
@@ -133,10 +141,8 @@ while run:
             if event.key == K_y:
                 test_tetromino.rotate_left(grid)
             if event.key == K_SPACE:
-                if test_tetromino.shape_index == 6:
-                    test_tetromino = Tetromino(0)
-                else:
-                    test_tetromino = Tetromino(test_tetromino.shape_index + 1)
+                test_tetromino = Tetromino(bags[0])
+                bags.pop(0)
                 test_tetromino.pos = [3, 3]
         if event.type == MOUSEBUTTONDOWN:
             if event.button == 1:
@@ -157,6 +163,10 @@ while run:
             if 50 <= pygame.mouse.get_pos()[0] <= 350 and 75 <= pygame.mouse.get_pos()[1] <= 675:
                 if (pygame.mouse.get_pos()[1] - 75) // 30 <= 20 and (pygame.mouse.get_pos()[0] - 50) // 30 <= 10:
                     grid[(pygame.mouse.get_pos()[1] - 75) // 30][(pygame.mouse.get_pos()[0] - 50) // 30] = 0
+
+    if len(bags) < 3:
+        generate_bag()
+        print(f"Generated bag {bags[2:]}: {bags}")
 
     # color palette on the side of the screen
     pygame.draw.rect(screen, grid_colors[0], (0, 100, 50, 50))
