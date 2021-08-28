@@ -84,15 +84,10 @@ t_shape = [["...",
 
 shapes = [i_shape, j_shape, l_shape, o_shape, s_shape, z_shape, t_shape]
 
-main_offset_data = (((0, 0), (0, 0), (0, 0), (0, 0), (0, 0)),
-                    ((0, 0), (1, 0), (1, 1), (0, -2), (1, -2)),
-                    ((0, 0), (0, 0), (0, 0), (0, 0), (0, 0)),
-                    ((0, 0), (-1, 0), (-1, 1), (0, -2), (-1, -2)))
-
-i_offset_data = (((0, 0), (-1, 0), (2, 0), (-1, 0), (2, 0)),
-                 ((-1, 0), (0, 0), (0, 0), (0, -1), (0, 2)),
-                 ((-1, -1), (1, -1), (-2, -1), (1, 0), (-2, 0)),
-                 ((0, -1), (0, -1), (0, -1), (0, 1), (0, -2)))
+i_offset_data = ((0, 0),
+                 (-1, 0),
+                 (-1, -1),
+                 (0, -1))
 
 
 class Tetromino:
@@ -109,27 +104,70 @@ class Tetromino:
                 if x == "0":
                     pygame.draw.rect(surface, colors[self.shape_index + 1], (int(self.pos.x + x_i) * 30, int(self.pos.y + y_i) * 30, 30, 30))
 
+    def detect_collision(self, grid):
+        for y_i, y in enumerate(self.shape[self.state]):
+            for x_i, x in enumerate(y):
+                if x == "0":
+                    if grid[int(self.pos[1] + y_i)][int(self.pos[0] + x_i)] != 0:
+                        return True
+        return False
+
     def rotate_right(self, grid):
-        # for y_i, y in enumerate(self.shape[self.state]):
-        #     for x_i, x in enumerate(y):
-                # if x == "0":
-                    # if grid[self.pos[1] + y_i][self.pos[0] + x_i] == 0:
-                    #     pass
+        fail = False
         if self.state <= len(self.shape) - 2:
             self.state += 1
         else:
             self.state = 0
         if self.shape_index == 0:
-            self.pos -= pygame.Vector2(i_offset_data[self.state][0]) - pygame.Vector2(i_offset_data[self.state - 1][0])
-        else:
-            self.pos -= pygame.Vector2(main_offset_data[self.state][0]) - pygame.Vector2(main_offset_data[self.state - 1][0])
+            self.pos -= pygame.Vector2(i_offset_data[self.state]) - pygame.Vector2(i_offset_data[self.state - 1])
+
+        for y_i, y in enumerate(self.shape[self.state]):
+            for x_i, x in enumerate(y):
+                if x == "0":
+                    if self.pos[0] + x_i < 0 or self.pos[0] + x_i > 9:
+                        if self.state >= 0:
+                            self.state -= 1
+                        else:
+                            self.state = len(self.shape) - 2
+                        if self.shape_index == 0:
+                            self.pos -= pygame.Vector2(i_offset_data[self.state]) - pygame.Vector2(i_offset_data[self.state + 1])
+                        fail = True
+                        break
+            if fail:
+                break
+
+        if self.detect_collision(grid):
+            if self.state >= 0:
+                self.state -= 1
+            else:
+                self.state = len(self.shape) - 2
 
     def rotate_left(self, grid):
+        fail = False
         if self.state >= 0:
             self.state -= 1
         else:
             self.state = len(self.shape) - 2
         if self.shape_index == 0:
-            self.pos -= pygame.Vector2(i_offset_data[self.state][0]) - pygame.Vector2(i_offset_data[self.state + 1][0])
-        else:
-            self.pos -= pygame.Vector2(main_offset_data[self.state][0]) - pygame.Vector2(main_offset_data[self.state + 1][0])
+            self.pos -= pygame.Vector2(i_offset_data[self.state]) - pygame.Vector2(i_offset_data[self.state + 1])
+
+        for y_i, y in enumerate(self.shape[self.state]):
+            for x_i, x in enumerate(y):
+                if x == "0":
+                    if self.pos[0] + x_i < 0 or self.pos[0] + x_i > 9:
+                        if self.state <= len(self.shape) - 2:
+                            self.state += 1
+                        else:
+                            self.state = 0
+                        if self.shape_index == 0:
+                            self.pos -= pygame.Vector2(i_offset_data[self.state]) - pygame.Vector2(i_offset_data[self.state - 1])
+                        fail = True
+                        break
+            if fail:
+                break
+
+        if self.detect_collision(grid):
+            if self.state <= len(self.shape) - 2:
+                self.state += 1
+            else:
+                self.state = 0
