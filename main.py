@@ -123,12 +123,15 @@ def place():
 
 
 def hard_drop():
+    global lockdown, fall_timer
     while True:
         a_t.pos[1] += 1
         if a_t.detect_collision(grid, a_t.pos):
             a_t.pos[1] -= 1
             place()
             break
+    lockdown = False
+    fall_timer = 0
 
 
 def line_clear():
@@ -244,6 +247,7 @@ while run:
                 a_t.rotate_left(grid)
             if event.key == K_c and not holding:
                 lockdown = 0
+                fall_timer = 0
                 if held == 0:
                     held = a_t.shape_index + 1
                     a_t = Tetromino(bags[0])
