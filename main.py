@@ -78,6 +78,7 @@ ma_time = 0  # time when a move activation button was pressed
 step_time = 0
 held = 0
 held_get = 0
+place_ = False
 holding = False
 blocked = False
 move = False
@@ -182,24 +183,19 @@ def game_over():
 while run:
     if fall_timer == 0:
         fall_timer = time()
-    if time() - fall_timer >= 1 or (time() - fall_timer / 20 >= 1 and pygame.key.get_pressed()[K_DOWN]):
-        a_t.pos[1] += 1
+    if time() - fall_timer >= 1 or (time() - fall_timer / 20 >= 1 and pygame.key.get_pressed()[K_DOWN]) and lockdown == 0:
+        a_t.pos[1] += 2
         fall_timer = 0
-        try:
-            if a_t.detect_collision(grid, a_t.pos):
-                a_t.pos[1] -= 1
-                if lockdown == 0:
-                    lockdown = time()
-                if time() - lockdown >= .5:
-                    place()
-                fall_timer = 0
-        except:
+        if a_t.detect_collision(grid, a_t.pos):
             a_t.pos[1] -= 1
             if lockdown == 0:
                 lockdown = time()
-            if time() - lockdown >= .5:
-                place()
             fall_timer = 0
+            place_ = True
+        if not place_:
+            lockdown = 0
+            a_t.pos[1] -= 1
+        place_ = False
     if (pygame.key.get_pressed()[K_LEFT] or pygame.key.get_pressed()[K_RIGHT]) and time() - ma_time >= 0.3:
         move = True
         if step_time == 0:
@@ -212,8 +208,8 @@ while run:
         step_time = 0
         a_t.pos[0] -= 1
 
-        if not a_t.detect_collision(grid, a_t.pos):
-            lockdown = 0
+        # if not a_t.detect_collision(grid, a_t.pos):
+        #     lockdown = 0
 
         if a_t.detect_collision(grid, a_t.pos):
             a_t.pos[0] += 1
@@ -222,8 +218,8 @@ while run:
         step_time = 0
         a_t.pos[0] += 1
 
-        if not a_t.detect_collision(grid, a_t.pos):
-            lockdown = 0
+        # if not a_t.detect_collision(grid, a_t.pos):
+        #     lockdown = 0
 
         if a_t.detect_collision(grid, a_t.pos):
             a_t.pos[0] -= 1
@@ -238,8 +234,8 @@ while run:
                 ma_time = time()
                 a_t.pos[0] -= 1
 
-                if not a_t.detect_collision(grid, a_t.pos):
-                    lockdown = 0
+                # if not a_t.detect_collision(grid, a_t.pos):
+                #     lockdown = 0
 
                 if a_t.detect_collision(grid, a_t.pos):
                     a_t.pos[0] += 1
@@ -248,8 +244,8 @@ while run:
                 ma_time = time()
                 a_t.pos[0] += 1
 
-                if not a_t.detect_collision(grid, a_t.pos):
-                    lockdown = 0
+                # if not a_t.detect_collision(grid, a_t.pos):
+                #     lockdown = 0
 
                 if a_t.detect_collision(grid, a_t.pos):
                     a_t.pos[0] -= 1
@@ -275,6 +271,12 @@ while run:
             if event.key == K_SPACE:
                 a_t = Tetromino(bags[0])
                 bags.pop(0)
+
+    if time() - lockdown >= .5 and lockdown != 0:
+        if a_t.detect_collision(grid, [a_t.pos[0], a_t.pos[1] + 1]):
+            place()
+        else:
+            lockdown = 0
 
     if len(bags) < 3:
         generate_bag()
