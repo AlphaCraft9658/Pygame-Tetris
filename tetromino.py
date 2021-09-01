@@ -3,16 +3,7 @@ from pygame.locals import *
 pygame.init()
 
 # shape formats
-i_shape = [[".....",
-            ".....",
-            ".0000"],
-           ["....",
-            "..0",
-            "..0",
-            "..0",
-            "..0"],
-           ["....",
-            "....",
+i_shape = [["....",
             "0000"],
            ["..0",
             "..0",
@@ -70,46 +61,73 @@ z_shape = [["00.",
             "00",
             "0"]]
 
-t_shape = [["...",
+t_shape = [[".0.",
             "000",
-            ".0."],
-           [".0",
-            "00",
-            ".0"],
-           [".0.",
-            "000"],
+            "..."],
            [".0.",
             ".00",
+            ".0."],
+           ["...",
+            "000",
+            ".0."],
+           [".0.",
+            "00.",
             ".0."]]
 
 shapes = [i_shape, j_shape, l_shape, o_shape, s_shape, z_shape, t_shape]
 
-i_offset_data = ((0, 0),
-                 (-1, 0),
-                 (-1, -1),
-                 (0, -1))
-
 
 class Tetromino:
     def __init__(self, shape):
-        self.pos = [0, 0]
+        if shape == 0:
+            self.pos = [3, -1]
+        elif shape == 3:
+            self.pos = [4, 0]
+        else:
+            self.pos = [3, 0]
+        self.shapes = shapes
         self.shape_index = shape
         self.shape = shapes[shape]
         self.state = 0
 
     def render(self, colors, surface: pygame.Surface):
-        self.pos = pygame.Vector2(self.pos)
         for y_i, y in enumerate(self.shape[self.state]):
             for x_i, x in enumerate(y):
                 if x == "0":
-                    pygame.draw.rect(surface, colors[self.shape_index + 1], (int(self.pos.x + x_i) * 30, int(self.pos.y + y_i) * 30, 30, 30))
+                    pygame.draw.rect(surface, colors[self.shape_index + 1], (int(self.pos[0] + x_i) * 30, int(self.pos[1] + y_i) * 30, 30, 30))
 
-    def detect_collision(self, grid):
-        for y_i, y in enumerate(self.shape[self.state]):
-            for x_i, x in enumerate(y):
-                if x == "0":
-                    if grid[int(self.pos[1] + y_i)][int(self.pos[0] + x_i)] != 0:
-                        return True
+    def ghost_piece(self, surface, grid):
+        test_pos = self.pos.copy()
+        while True:
+            test_pos[1] += 1
+            try:
+                if self.detect_collision(grid, test_pos) or test_pos[1] > 18:
+                    test_pos[1] -= 1
+                    for y_i, y in enumerate(self.shape[self.state]):
+                        for x_i, x in enumerate(y):
+                            if x == "0":
+                                pygame.draw.rect(surface, (100, 100, 100), (int(test_pos[0] + x_i) * 30, int(test_pos[1] + y_i) * 30, 30, 30))
+                    break
+            except:
+                test_pos[1] -= 1
+                for y_i, y in enumerate(self.shape[self.state]):
+                    for x_i, x in enumerate(y):
+                        if x == "0":
+                            pygame.draw.rect(surface, (100, 100, 100),
+                                             (int(test_pos[0] + x_i) * 30, int(test_pos[1] + y_i) * 30, 30, 30))
+                break
+
+    def detect_collision(self, grid, pos):
+        try:
+            for y_i, y in enumerate(self.shape[self.state]):
+                for x_i, x in enumerate(y):
+                    if x == "0":
+                        if pos[0] + x_i < 0:
+                            return True
+                        if grid[int(pos[1] + y_i)][int(pos[0] + x_i)] != 0:
+                            return True
+        except:
+            return True
         return False
 
     def rotate_right(self, grid):
@@ -118,25 +136,21 @@ class Tetromino:
             self.state += 1
         else:
             self.state = 0
-        if self.shape_index == 0:
-            self.pos -= pygame.Vector2(i_offset_data[self.state]) - pygame.Vector2(i_offset_data[self.state - 1])
 
         for y_i, y in enumerate(self.shape[self.state]):
             for x_i, x in enumerate(y):
                 if x == "0":
-                    if self.pos[0] + x_i < 0 or self.pos[0] + x_i > 9:
+                    if self.pos[0] + x_i < 0 or self.pos[0] + x_i > 9 or self.pos[1] + y_i < 0 or self.pos[1] + y_i > 19:
                         if self.state >= 0:
                             self.state -= 1
                         else:
                             self.state = len(self.shape) - 2
-                        if self.shape_index == 0:
-                            self.pos -= pygame.Vector2(i_offset_data[self.state]) - pygame.Vector2(i_offset_data[self.state + 1])
                         fail = True
                         break
             if fail:
                 break
 
-        if self.detect_collision(grid):
+        if self.detect_collision(grid, self.pos):
             if self.state >= 0:
                 self.state -= 1
             else:
@@ -148,25 +162,21 @@ class Tetromino:
             self.state -= 1
         else:
             self.state = len(self.shape) - 2
-        if self.shape_index == 0:
-            self.pos -= pygame.Vector2(i_offset_data[self.state]) - pygame.Vector2(i_offset_data[self.state + 1])
 
         for y_i, y in enumerate(self.shape[self.state]):
             for x_i, x in enumerate(y):
                 if x == "0":
-                    if self.pos[0] + x_i < 0 or self.pos[0] + x_i > 9:
+                    if self.pos[0] + x_i < 0 or self.pos[0] + x_i > 9 or self.pos[1] + y_i < 0 or self.pos[1] + y_i > 19:
                         if self.state <= len(self.shape) - 2:
                             self.state += 1
                         else:
                             self.state = 0
-                        if self.shape_index == 0:
-                            self.pos -= pygame.Vector2(i_offset_data[self.state]) - pygame.Vector2(i_offset_data[self.state - 1])
                         fail = True
                         break
             if fail:
                 break
 
-        if self.detect_collision(grid):
+        if self.detect_collision(grid, self.pos):
             if self.state <= len(self.shape) - 2:
                 self.state += 1
             else:
