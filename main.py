@@ -109,13 +109,14 @@ def update_grid():
 
 
 def place():
-    global a_t, lockdown, holding
+    global a_t, lockdown, holding, fall_timer
     for y_i_p, y_p in enumerate(a_t.shape[a_t.state]):
         for x_i_p, x_p in enumerate(y_p):
             if x_p == "0":
                 grid[a_t.pos[1] + y_i_p][a_t.pos[0] + x_i_p] = a_t.shape_index + 1
     lockdown = 0
     holding = False
+    fall_timer = 0
     a_t = Tetromino(bags[0])
     bags.pop(0)
     game_over()
@@ -207,20 +208,12 @@ while run:
     if move and time() - step_time >= .05 and pygame.key.get_pressed()[K_LEFT]:
         step_time = 0
         a_t.pos[0] -= 1
-
-        # if not a_t.detect_collision(grid, a_t.pos):
-        #     lockdown = 0
-
         if a_t.detect_collision(grid, a_t.pos):
             a_t.pos[0] += 1
 
     if move and time() - step_time >= .05 and pygame.key.get_pressed()[K_RIGHT]:
         step_time = 0
         a_t.pos[0] += 1
-
-        # if not a_t.detect_collision(grid, a_t.pos):
-        #     lockdown = 0
-
         if a_t.detect_collision(grid, a_t.pos):
             a_t.pos[0] -= 1
 
@@ -233,20 +226,12 @@ while run:
             if event.key == K_LEFT:
                 ma_time = time()
                 a_t.pos[0] -= 1
-
-                # if not a_t.detect_collision(grid, a_t.pos):
-                #     lockdown = 0
-
                 if a_t.detect_collision(grid, a_t.pos):
                     a_t.pos[0] += 1
 
             if event.key == K_RIGHT:
                 ma_time = time()
                 a_t.pos[0] += 1
-
-                # if not a_t.detect_collision(grid, a_t.pos):
-                #     lockdown = 0
-
                 if a_t.detect_collision(grid, a_t.pos):
                     a_t.pos[0] -= 1
 
