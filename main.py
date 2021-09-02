@@ -171,11 +171,11 @@ def update_hold():
             for x_i, x in enumerate(y):
                 if x == "0":
                     if 0 != held - 1 != 3:
-                        pygame.draw.rect(hold, grid_colors[held], (x_i * 15 + 16, y_i * 15 + 23, 15, 15))
+                        pygame.draw.rect(hold, grid_colors[held], (x_i * 15 + 17, y_i * 15 + 23, 15, 15))
                     elif held - 1 == 0:
-                        pygame.draw.rect(hold, grid_colors[held], (x_i * 15 + 8, y_i * 15 + 16, 15, 15))
+                        pygame.draw.rect(hold, grid_colors[held], (x_i * 15 + 9, y_i * 15 + 16, 15, 15))
                     elif held - 1 == 3:
-                        pygame.draw.rect(hold, grid_colors[held], (x_i * 15 + 23, y_i * 15 + 23, 15, 15))
+                        pygame.draw.rect(hold, grid_colors[held], (x_i * 15 + 24, y_i * 15 + 23, 15, 15))
 
 
 def game_over():
