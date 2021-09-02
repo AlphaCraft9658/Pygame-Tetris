@@ -257,9 +257,6 @@ while run:
                     a_t = Tetromino(held - 1)
                     held = held_get
                 holding = True
-            if event.key == K_SPACE:
-                a_t = Tetromino(bags[0])
-                bags.pop(0)
 
     if time() - lockdown >= .5 and lockdown != 0:
         if a_t.detect_collision(grid, [a_t.pos[0], a_t.pos[1] + 1]):
