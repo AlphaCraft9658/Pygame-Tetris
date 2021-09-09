@@ -18,9 +18,9 @@ pygame.draw.polygon(icon, (200, 0, 255), ((0, 50), (300, 50), (300, 150), (200, 
 pygame.display.set_icon(icon)
 
 # audio
-pygame.mixer.music.load("aud/music/Tetris.ogg")
-pygame.mixer.music.set_volume(.5)
-pygame.mixer.music.play(-1)
+# pygame.mixer.music.load("aud/music/Tetris.ogg")
+# pygame.mixer.music.set_volume(.5)
+# pygame.mixer.music.play(-1)
 
 # hold
 hold = pygame.Surface((77, 77))
