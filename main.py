@@ -54,7 +54,6 @@ hold_t_rect = hold_t.get_rect()
 hold_t_rect.centerx = hold_rect.centerx + 2
 hold_t_rect.y = hold_rect.y - 35
 
-
 # virtual grid
 grid = [[0 for n in range(10)] for i in range(20)]
 
